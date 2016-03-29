@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+	</head>
+	<body class="jumbotron">
+		<div class="container">
+			<h2> Consultar relatório </h2>
+			<form id="frmConsulta" class="form-inline">
+				<div class="form-group">
+					<label class="arial-label text-primary">Código da solicitação: </label>
+					<input type="text" id="idSolicitacao" name="idSolicitacao" class="form-control">
+				</div>
+				<input type="button" id="btnEnviar" value="Enviar" class="btn btn-md btn-primary">
+			</form>
+		</div>
+		<div id="relatorio">
+		</div>
+	</body>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			$('#btnEnviar').on('click', function(){
+				$.ajax({
+					beforeSend: function (xhr) {
+						xhr.setRequestHeader ("Authorization", "Basic " + btoa("dcarvalho" + ":" + "dcarvalho"));
+					},
+					url: 'http://localhost:12670/api/Calculo/Report',
+					method: 'GET',
+					data: $('#frmConsulta').serialize()
+				})
+				.always(function(){
+					$('#relatorio').empty();
+				})
+				.done(function(data){
+					$.each(data, function(index){
+						$.each(data[index].calculos, function(indexCalculo){
+							$('#relatorio').append('<div class="relatorio-info form-group"><label class="arial-label text-primary">Código da solicitação: ' + data[index].calculos[indexCalculo].calculo.idSolicitacao + '</label></br>' 
+													+ '<label class="arial-label text-primary">Código do cliente: ' + data[index].calculos[indexCalculo].calculo.idCliente + '</label></br>'
+													+ '<label class="arial-label text-primary">Data da solicitação: ' + data[index].calculos[indexCalculo].calculo.dataSolicitacao + '</label></br>'
+													+ '<label class="arial-label text-primary">Url do relatório: ' + data[index].calculos[indexCalculo].urlReport + '</label></br>' 
+													+ '<div class=".col-md-3 .col-md-offset-3"><fieldset><legend>Verbas</legend>');
+							$.each(data[index].calculos[indexCalculo].verbas, function(indexVerba){
+								$('#relatorio').append('<label class="arial-label text-primary">Título: ' + data[index].calculos[indexCalculo].verbas[indexVerba].titulo + '</label></br>'
+														+ '<label class="arial-label text-primary">Subtítulo: ' + data[index].calculos[indexCalculo].verbas[indexVerba].subtitulo + '</label></br>'
+														+ '<label class="arial-label text-primary">Valor principal: ' + data[index].calculos[indexCalculo].verbas[indexVerba].valorPrincipal + '</label></br>'
+														+ '<label class="arial-label text-primary">Perda provável: ' + data[index].calculos[indexCalculo].verbas[indexVerba].perdaRiscoProvavel + '</label></br>'
+														+ '<label class="arial-label text-primary">Perda possível: ' + data[index].calculos[indexCalculo].verbas[indexVerba].perdaRiscoPossivel + '</label></br>'
+														+ '<label class="arial-label text-primary">Perda remota: ' + data[index].calculos[indexCalculo].verbas[indexVerba].perdaRiscoRemoto + '</label></br>'
+														+ '<label class="arial-label text-primary">Risco não atribuído: ' + data[index].calculos[indexCalculo].verbas[indexVerba].riscoNaoAtribuido + '</label></br>'
+														+ '<label class="arial-label text-primary">Taxa de juros: ' + data[index].calculos[indexCalculo].verbas[indexVerba].juros + '</label></br>'
+														+ '<label class="arial-label text-primary">Valor total: ' + data[index].calculos[indexCalculo].verbas[indexVerba].valorTotal + '</label>'
+														+ '</fieldset></div></div></br>')
+							});
+						});
+					});
+				})
+				.fail(function(){
+					alert('Falha ao concultar relatório.');
+				})
+			});
+		});
+	</script>
+</html>	

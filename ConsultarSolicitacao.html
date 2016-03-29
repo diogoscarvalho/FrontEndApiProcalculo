@@ -1,0 +1,80 @@
+﻿<!Doctype html>
+<html>
+	<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+	</head>
+	<body class="jumbotron">
+		<div class="jumbotron">
+			<div class="container">
+				<form class="form" id="frmConsulta">
+					<div class="from-group col-xs-5">
+						<label class="arial-label text-primary">Código da Solicitação</label>
+						<input type="text" id="idSolicitacao" name="idSolicitacao" class="form-control">
+					</div>
+					<div class="form-group col-xs-5">
+						<label class="arial-label text-primary">Código do Cliente</label>
+						<input type="text" id="idCliente" name="idCliente" class="form-control">
+					</div>
+					<div class="form-group col-xs-5">
+						<label class="arial-label text-primary">Data da Solicitação</label>
+						<input type="data" id="DataSolicitacao" name="DataSolicitacao" class="form-control">
+					</div>
+					<div class="form-group col-xs-5">
+						<label class="arial-label text-primary">Status da Solicitação</label>
+						<input type="text" id="status" name="status" class="form-control">
+					</div>
+				</form>
+				<div class="col-xs-5">
+					<input type="button" id="btnEnviar" name="btnEnviar" value="Enviar" class="btn btn-primary btn-lg">
+				</div>
+			</div>
+			<div id="retornoCalculo" class="col-xs-10">
+				<fieldset>
+					<legend><span>Cálculos</span></legend>
+					<div id="retornoCalculo-info" class="col-xs-6">
+					</div>
+				</fieldset>
+			</div>
+		</div>
+	</body>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script type="text/javascript">
+	
+	$(function(){
+		$('#retornoCalculo').hide();
+	
+		$('#btnEnviar').on('click', function(){
+			$.ajax({
+				beforeSend: function (xhr) {
+					xhr.setRequestHeader ("Authorization", "Basic " + btoa("dcarvalho" + ":" + "dcarvalho"));
+				},
+				method:"GET",
+				url: "http://localhost:12670/api/Calculo/Search",
+				data: $("#frmConsulta").serialize()
+			})
+			.always(function(){
+				$('#retornoCalculo-info').empty();
+				$("#frmConsulta").trigger('reset');
+				$('#retornoCalculo').hide();
+			})
+			.done(function(data){
+				$('#retornoCalculo').show();
+				$.each(data, function(index){
+					$('#retornoCalculo-info').append('<div class="form-group">' + 
+													'<label class="arial-label text-primary"><b>Código do cliente: ' + data[index].idCliente + '</label></br>'
+													+ '<label class="arial-label text-primary"><b>Código da solicitação: ' + data[index].idSolicitacao + '</label></br>'
+													+ '<label class="arial-label text-primary"><b>Data da Solicitação: ' + data[index].dataSolicitacao + '</label></br>'
+													+ '<label class="arial-label text-primary"><b>Status: ' + data[index].status + '</label>'
+													+ '</div>');
+				});
+			})
+			.fail(function(data){
+				alert(data.responseJSON.message);
+			});
+		});
+	});
+	
+	</script>
+</html>
