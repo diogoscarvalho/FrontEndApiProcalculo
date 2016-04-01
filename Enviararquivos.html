@@ -1,0 +1,128 @@
+﻿<! DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+	<head>
+	<body class="jumbotron">
+		<div class="jumbotron">
+			<div class="container">
+				<form id="frmArquivos" class="form">
+					<div class="form-group form-inline">
+						<label class="arial-label text-primary">Código da solicitação:</label>
+						<input type="text" id="idSolicitacao" class="form-control">
+					</div>
+					<div id="arquivos" class="form-group col-xs-10">
+						<fieldset>
+							<legend><span>Arquivos</span></legend>
+							<div class="arquivos-info col-xs-10">
+								<div class="form-group col-xs-5">
+									<input type="hidden" name="index" value="1">
+									<label class="aria-label text-primary">Nome:</label>
+									<input type="text" name="nomeArquivo-1" placeholder="e.p xxx.xxx.xxx-xx" class="form-control">
+								</div>
+								<div class="form-group col-xs-5">
+									<label class="aria-label text-primary">Arquivo Base64:</label>
+									<input type="text" name="base64-1" class="form-control">
+								</div>
+								<div class="col-xs-4">
+									<button type="button" id="btnRemoverArquivo-1" class="btnRemoverArquivo" name="btnRemoverArquivo-1">
+										<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+									</button>
+								</div>
+							</div>
+						</fieldset>
+						<div class="col-xs-5">
+							<button type="button" id="btnAdicionarArquivo">
+								<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+							</button>
+						</div>
+				  </div>
+				  <input type="button" id="btnEnviar" value="Enviar" class="btn btn-primary btn-lg col-xs-3">
+				</form>
+			</div>
+		</div>
+	</body>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			$("#btnRemoverArquivo-1").hide();
+			
+			$('.btnRemoverArquivo').on('click', function(){
+				$(this).parent().parent().remove();
+			});
+			
+			$('#btnAdicionarArquivo').on('click', function(){
+				inserirBlocoArquivo();
+			});
+			
+			function inserirBlocoArquivo(){
+				var bloco = $('.arquivos-info:first').clone(true),
+				index = parseInt(bloco.find('input[name="index"]').val()) + 1;
+			
+				bloco.find('input[name^="nome-"]').attr('name', 'nomeArquivo-'+index).val('');
+				bloco.find('input[name^="cpf-"]').attr('name', 'base64-'+index).val('');
+				bloco.find('button[name^="btnRemoverArquivo-"]').attr('name', 'btnRemoverArquivo-'+index).show();
+				
+				
+				bloco.insertAfter('.arquivos-info:last');
+			};
+			
+			function preparaArrayArquivos(arquivos){
+				var arquivoArray = new Array();
+				for(j = 0; j < (arquivos.length)/2; j++){
+					var arquivo = new Object();
+					var cont = 0;
+					for(i = (j*2); i < arquivos.length; i++){
+						if(cont < 2){
+							if(arquivos[i].name.indexOf("nomeArquivo") > -1){
+								arquivo.fileName = arquivos[i].value;
+								cont++;
+							}			
+							if(arquivos[i].name.indexOf("base64") > -1){
+								arquivo.file = arquivos[i].value;
+								cont++;
+							}			
+						}				
+					}
+					arquivoArray.push(arquivo);
+				}
+				
+				return arquivoArray;
+			};
+			
+			$('#btnEnviar').on('click', function(){
+				var arquivosValues = $('#arquivos :input').not(':hidden, :button');
+				
+				var arquivosEnv = preparaArrayArquivos(arquivosValues);
+				var objEnvio = new Object();
+				objEnvio.arquivos = arquivosEnv;
+				objEnvio.idSolicitacao = $("#idSolicitacao").val();
+				
+				$.ajax({
+					beforeSend: function (xhr) {
+						xhr.setRequestHeader ("Authorization", "Basic " + btoa("dcarvalho" + ":" + "dcarvalho"));
+					},
+					url: "http://localhost:12670/api/Calculo/SendFiles",
+					method: "POST",
+					contentType: "application/json",
+					type: "json",
+					data: JSON.stringify(objEnvio)
+				})
+				.done(function(data){
+					alert("Arquivos enviados com sucesso!")
+				})
+				.fail(function(data){
+					if(data.responseJSON != undefined){
+						alert(data.responseJSON.message);
+					}
+					else{
+						alert(data.responseText);
+					}	
+				});
+			});
+			
+		});
+	</script>
+</html>
