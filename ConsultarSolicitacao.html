@@ -14,10 +14,6 @@
 						<input type="text" id="idSolicitacao" name="idSolicitacao" class="form-control">
 					</div>
 					<div class="form-group col-xs-5">
-						<label class="arial-label text-primary">Código do Cliente</label>
-						<input type="text" id="idCliente" name="idCliente" class="form-control">
-					</div>
-					<div class="form-group col-xs-5">
 						<label class="arial-label text-primary">Data da Solicitação</label>
 						<input type="data" id="DataSolicitacao" name="DataSolicitacao" class="form-control">
 					</div>
@@ -44,11 +40,10 @@
 	
 	$(function(){
 		$('#retornoCalculo').hide();
-	
 		$('#btnEnviar').on('click', function(){
 			$.ajax({
 				beforeSend: function (xhr) {
-					xhr.setRequestHeader ("Authorization", "Basic " + btoa("dcarvalho" + ":" + "dcarvalho"));
+					xhr.setRequestHeader ("Authorization", "Basic " + btoa("a" + ":" + "dcarvalho"));
 				},
 				method:"GET",
 				url: "http://localhost:12670/api/Calculo/Search",

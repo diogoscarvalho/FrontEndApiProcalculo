@@ -35,30 +35,42 @@
 					$('#relatorio').empty();
 				})
 				.done(function(data){
-					$.each(data, function(index){
-						$.each(data[index].calculos, function(indexCalculo){
-							$('#relatorio').append('<div class="relatorio-info form-group"><label class="arial-label text-primary">Código da solicitação: ' + data[index].calculos[indexCalculo].calculo.idSolicitacao + '</label></br>' 
-													+ '<label class="arial-label text-primary">Código do cliente: ' + data[index].calculos[indexCalculo].calculo.idCliente + '</label></br>'
-													+ '<label class="arial-label text-primary">Data da solicitação: ' + data[index].calculos[indexCalculo].calculo.dataSolicitacao + '</label></br>'
-													+ '<label class="arial-label text-primary">Url do relatório: ' + data[index].calculos[indexCalculo].urlReport + '</label></br>' 
-													+ '<div class=".col-md-3 .col-md-offset-3"><fieldset><legend>Verbas</legend>');
-							$.each(data[index].calculos[indexCalculo].verbas, function(indexVerba){
-								$('#relatorio').append('<label class="arial-label text-primary">Título: ' + data[index].calculos[indexCalculo].verbas[indexVerba].titulo + '</label></br>'
-														+ '<label class="arial-label text-primary">Subtítulo: ' + data[index].calculos[indexCalculo].verbas[indexVerba].subtitulo + '</label></br>'
-														+ '<label class="arial-label text-primary">Valor principal: ' + data[index].calculos[indexCalculo].verbas[indexVerba].valorPrincipal + '</label></br>'
-														+ '<label class="arial-label text-primary">Perda provável: ' + data[index].calculos[indexCalculo].verbas[indexVerba].perdaRiscoProvavel + '</label></br>'
-														+ '<label class="arial-label text-primary">Perda possível: ' + data[index].calculos[indexCalculo].verbas[indexVerba].perdaRiscoPossivel + '</label></br>'
-														+ '<label class="arial-label text-primary">Perda remota: ' + data[index].calculos[indexCalculo].verbas[indexVerba].perdaRiscoRemoto + '</label></br>'
-														+ '<label class="arial-label text-primary">Risco não atribuído: ' + data[index].calculos[indexCalculo].verbas[indexVerba].riscoNaoAtribuido + '</label></br>'
-														+ '<label class="arial-label text-primary">Taxa de juros: ' + data[index].calculos[indexCalculo].verbas[indexVerba].juros + '</label></br>'
-														+ '<label class="arial-label text-primary">Valor total: ' + data[index].calculos[indexCalculo].verbas[indexVerba].valorTotal + '</label>'
-														+ '</fieldset></div></div></br>')
-							});
+						$.each(data.calculos, function(indexCalculo, obj){
+							$('#relatorio').append('<div class="relatorio-info form-group"><label class="arial-label text-primary">Código da solicitação: ' + obj.calculo.idSolicitacao + '</label></br>' 
+													+ '<label class="arial-label text-primary">Código do cliente: ' + obj.calculo.idCliente + '</label></br>'
+													+ '<label class="arial-label text-primary">Data da solicitação: ' + obj.calculo.dataSolicitacao + '</label></br>'
+													);
+							if(obj.reclamantes.length > 0){
+								$('#relatorio').append('<fieldset><label>Reclamantes</label>');
+								$.each(obj.reclamantes, function(indexReclamantes,reclamante){
+									$('#relatorio').append( '<label class="arial-label text-primary">Nome: ' + reclamante.nome + '</label></br>'
+															+ '<label class="arial-label text-primary">Cpf: ' + reclamante.cpf + '</label></br>'
+															+ '<label class="arial-label text-primary">Paradigma: ' + reclamante.paradigma + '</label></br>'
+															+ '<label class="arial-label text-primary">Arquivo do relatório: ' + reclamante.fileReport.name + '</label></br>'
+															+ '<label class="arial-label text-primary">Extensão: ' + reclamante.fileReport.extension + '</label></br>'
+															+ '<label class="arial-label text-primary">Arquivo Base64: ' + reclamante.fileReport.fileBase64 + '</label></br>'
+															+ '</fieldset>');
+									if(reclamante.verbas.length > 0){
+									$('#relatorio').append('<div class=".col-md-3 .col-md-offset-3"><fieldset><legend>Verbas</legend>');
+										$.each(reclamante.verbas, function(indexVerba, verbas){
+											$('#relatorio').append('<label class="arial-label text-primary">Título: ' + verbas[indexVerba].verba.titulo + '</label></br>'
+																	+ '<label class="arial-label text-primary">Subtítulo: ' + verbas[indexVerba].verba.subtitulo + '</label></br>'
+																	+ '<label class="arial-label text-primary">Valor principal: ' + verbas[indexVerba].verba.valorPrincipal + '</label></br>'
+																	+ '<label class="arial-label text-primary">Perda provável: ' + verbas[indexVerba].verba.perdaRiscoProvavel + '</label></br>'
+																	+ '<label class="arial-label text-primary">Perda possível: ' + verbas[indexVerba].verba.perdaRiscoPossivel + '</label></br>'
+																	+ '<label class="arial-label text-primary">Perda remota: ' + verbas[indexVerba].verba.perdaRiscoRemoto + '</label></br>'
+																	+ '<label class="arial-label text-primary">Risco não atribuído: ' + verbas[indexVerba].verba.riscoNaoAtribuido + '</label></br>'
+																	+ '<label class="arial-label text-primary">Taxa de juros: ' + verbas[indexVerba].verba.juros + '</label></br>'
+																	+ '<label class="arial-label text-primary">Valor total: ' + verbas[indexVerba].verba.valorTotal + '</label>'
+																	+ '</fieldset></div></div></br>');
+											});
+									}
+								});
+							}
 						});
-					});
 				})
-				.fail(function(){
-					alert('Falha ao concultar relatório.');
+				.fail(function(data){
+					alert(data.responseText);
 				})
 			});
 		});

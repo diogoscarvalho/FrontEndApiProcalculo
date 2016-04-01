@@ -23,10 +23,6 @@
     <input class="form-control " type="email" id="emailSolicitante" name="emailSolicitante">
   </div>
   <div class="form-group col-xs-5">
-    <label class="aria-label text-primary">Código do cliente:</label>
-    <input type="text" class="form-control" id="idCliente" name="idCliente">
-  </div>
-  <div class="form-group col-xs-5">
     <label class="aria-label text-primary">Código do caso:</label>
     <input type="text" class="form-control" id="idCaso" name="idCaso">
   </div>
@@ -206,7 +202,7 @@ $(function(){
 				xhr.setRequestHeader ("Authorization", "Basic " + btoa("dcarvalho" + ":" + "dcarvalho"));
 			},
 			method:'POST',
-			url: 'http://localhost:12670/api/',
+			url: 'http://localhost:12670/api/Calculo/',
 			type: 'json',
 			contentType: 'application/json',
 			data: objEnvio
